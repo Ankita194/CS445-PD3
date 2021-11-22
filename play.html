@@ -1,0 +1,162 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+<title>Pseudonym</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<meta name="viewport" content="width=device-width, initial-scale=1" /> 
+	<link rel="stylesheet" href="css/styles.css?v=1.0">
+
+	<script src="js/scripts.js">
+	</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/easytimer@1.1.1/src/easytimer.min.js"></script> 
+	<script>
+		var timer = new Timer();
+		//timer.start({countdown: true, startValues: {seconds: 60}});
+		$('#countdownExample .values').html(timer.getTimeValues().toString());
+		timer.addEventListener('secondsUpdated', function (e) {
+			$('#countdownExample .progress').html("<div class='progress-bar progress-bar-danger' align= 'center' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width:"+((timer.getTimeValues().seconds.toString())/.6)+"%'>"+(timer.getTimeValues().seconds.toString())+"</div>");
+		});
+		timer.addEventListener('targetAchieved', function (e) {
+			timerEnd();
+		});
+ 
+		function startTimer() {
+			timer.start({countdown: true, startValues: {seconds: 60}});
+		}
+        var cards = {{ cards | safe }}
+		var cardsCopy = [...cards]
+		shuffle(cardsCopy)
+		var teamOneScore = 0
+		var teamTwoScore = 0;
+		var currentTeamIsTeamOne = true;
+		var currentCard = 0;
+		var phase = 0;
+		loadCard();
+		function phaseStart() {
+			timer.stop();
+			if(phase == 3) {
+				alert("Team 1: " + teamOneScore + "\n" + "Team 2: " + teamTwoScore )
+				document.getElementById("body").innerHTML = "Boys Rule Girls Drool"
+			} else {
+				if(phase == 2) {
+					currentTeamIsTeamOne = true;
+					alert("Phase " + (phase+1) + " has begun. Team 1 starts" + "\n"+ "Team 1: " + teamOneScore + "\n" + "Team 2: " + teamTwoScore)
+				} else {
+					currentTeamIsTeamOne = false;
+					alert("Phase " + (phase+1) + " has begun. Team 2 starts" + "\n" + "Team 1: " + teamOneScore + "\n" + "Team 2: " + teamTwoScore )
+				}
+				cardsCopy = [...cards]
+				shuffle(cardsCopy)
+				currentCard = 0
+			}
+		}
+		function loadCard() {
+			document.getElementById('title').innerHTML = cardsCopy[currentCard]["title"]
+			document.getElementById('description').innerHTML = cardsCopy[currentCard]["description"]
+			document.getElementById('value').innerHTML = cardsCopy[currentCard]["value"]
+		}
+
+		function changeCard() {
+			currentCard = (currentCard + 1) % cardsCopy.length
+			if(cardsCopy.length == 0) {
+				//next phase
+				phase++;
+				phaseStart();
+			}
+			loadCard();
+		}
+
+		function shuffle(array) {
+			array.sort(() => Math.random() - 0.5)
+		}
+
+		function score() {
+			if(currentTeamIsTeamOne) {
+				teamOneScore += cards[currentCard]["value"]
+			} else {
+				teamTwoScore += cards[currentCard]["value"]
+			}
+			cardsCopy.splice(currentCard, 1);
+			changeCard();
+		}
+
+		function timerEnd() {
+			currentTeamIsTeamOne = !currentTeamIsTeamOne;
+			alert("Timer ended");
+		}
+
+    </script>
+</head>
+
+	<style>
+		.cardOutline {
+			width: 48vh;
+			height: 75vh; 
+			text-align: center; 
+			margin: 10px; 
+			background: #FFF; 
+			border-radius: 1vh
+		}
+		.description {
+			font-size: 2vh;
+		}
+		.textContent{
+			overflow-y:auto;
+			width: 48vh;
+			height: 75vh;
+		}
+		::-webkit-scrollbar {
+			width: 0px;
+			background: transparent; /* make scrollbar transparent */
+		}
+		.title{
+			font-size: 5vh;
+		}
+		.point{
+			font-size: 2vh;
+		}
+	</style>
+</head>
+
+<body id="body" style="background-color: #1d3557">
+
+	<div class="jumbotron" style = "background-color: #457b9d; padding-top: 5px; padding-bottom: 5px; border-radius: 5px">
+		<br /><h1 align = "center" style = "color: #e63946">Pseudonym</h1><br />
+	</div>
+
+	<div id="countdownExample">
+		<div id = "timer"  align = "center"><button onclick="startTimer()">Start</button>
+    	<div class="values"></div>
+	</div>
+	  <div class="progress">
+	  <div class="progress-bar progress-bar-danger" align= "center" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">60</div>;
+    </div>
+  </div>
+	<div align="center">
+		<div class= "cardOutline" >
+			<div class = "textContent" id = "textContent">
+				<div class = "title" id="title"></div>
+				<div class="description" id="description"></div>
+				Value:<div id= "value"></div><br />
+			</div>
+			<div class = "point" id = "point">
+			</div>
+			<div class="row">
+				<div id="pickCardContainer" class="col-md-6">
+					<button id="pickButton" onclick="score()">Success</button>
+				</div>
+				<div id="forwardButtonContainer" class="col-md-6">
+					<button id="forwardButton" onclick="changeCard()">Skip</button>
+				</div>
+			</div>
+		</div>
+	<div>
+
+</body>
+</html>
